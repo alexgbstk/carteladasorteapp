@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+{% if not logged %}
+<form method="post" action="{{ url_for('login') }}" class="space-y-4">
+    <input type="email" name="email" required class="border p-2 w-full" placeholder="seu email">
+    <button class="bg-blue-500 text-white px-4 py-2">Entrar</button>
+</form>
+{% else %}
+<div class="mb-4">Olá {{ apelido }}, clique em apenas um time abaixo:</div>
+{% include '_grid.html' %}
+<div class="mt-4">
+    <a href="{{ url_for('logout') }}" class="text-sm text-blue-500">Sair</a>
+</div>
+{% endif %}
+{% endblock %}
