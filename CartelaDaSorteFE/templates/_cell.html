@@ -1,0 +1,9 @@
+<div class="border p-2 bg-white">
+    <form hx-post="{{ url_for('aposta') }}" hx-target="#cartela" hx-swap="outerHTML">
+        <input type="hidden" name="time" value="{{ club }}">
+        <button class="w-full text-left">
+            <div class="font-semibold">{{ club }}</div>
+            <div class="text-sm text-gray-700">{{ ', '.join(apostas) }}</div>
+        </button>
+    </form>
+</div>
