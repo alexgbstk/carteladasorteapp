@@ -7,10 +7,7 @@
 </form>
 {% else %}
 <div class="mb-4">Olá {{ apelido }}, clique em apenas um time abaixo:</div>
-<div id="cartela" class="space-y-4">
-    {% include '_grid.html' %}
-    {% include '_result.html' %}
-</div>
+{% include '_grid.html' %}
 <div class="mt-4">
     <a href="{{ url_for('logout') }}" class="text-sm text-blue-500">Sair</a>
 </div>
