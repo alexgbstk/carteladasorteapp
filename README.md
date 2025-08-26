@@ -44,3 +44,4 @@ pytest
 
 - A lista de clubes é buscada online; se falhar, usa-se um conjunto local de 20 times da Série A.
 - Os dados da cartela são mantidos apenas em memória; reiniciar o back-end limpa as apostas.
+- Essa app serve apenas pra treinamento.
