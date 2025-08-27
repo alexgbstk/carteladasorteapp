@@ -5,11 +5,11 @@ from typing import Dict, List
 from . import state, utils, models, schemas, clubs_source
 
 
-async def nova_cartela() -> schemas.Cartela:
+async def nova_cartela(numero_sorteio: str | None = None) -> schemas.Cartela:
     async with state.lock:
         url = os.getenv("CLUBS_SOURCE_URL")
         clubes = clubs_source.get_clubs(url)
-        numero = utils.generate_numero_sorteio()
+        numero = numero_sorteio or utils.generate_numero_sorteio()
         apostas = {club: [] for club in clubes}
         cartela = models.Cartela(numero_sorteio=numero, clubes=clubes, apostas=apostas)
         state.cartela_atual = cartela

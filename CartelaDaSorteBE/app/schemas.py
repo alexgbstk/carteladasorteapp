@@ -27,3 +27,7 @@ class ApostaResp(BaseModel):
 class SortearResp(BaseModel):
     numero_sorteio: str
     time_sorteado: str
+
+
+class NovaCartelaReq(BaseModel):
+    numero_sorteio: Optional[str] = None

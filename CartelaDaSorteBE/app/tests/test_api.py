@@ -10,6 +10,12 @@ def create_cartela():
     return resp.json()
 
 
+def test_nova_cartela_com_numero_personalizado():
+    resp = client.post("/api/NovaCartela", json={"numero_sorteio": "123"})
+    assert resp.status_code == 200
+    assert resp.json()["numero_sorteio"] == "123"
+
+
 def test_atualizar_sem_cartela_retorna_erro():
     from app import state
     state.cartela_atual = None

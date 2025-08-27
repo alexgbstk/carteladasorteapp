@@ -16,9 +16,11 @@ def get_apelido(email: str) -> str:
 
 def ensure_cartela():
     numero = session.get("numero_sorteio")
-    params = {"numero_sorteio": numero} if numero else {}
-    resp = requests.get(f"{BE_BASE_URL}/api/AtualizarCartela", params=params)
-    if resp.status_code != 200:
+    if numero:
+        resp = requests.get(f"{BE_BASE_URL}/api/AtualizarCartela", params={"numero_sorteio": numero})
+        if resp.status_code != 200:
+            resp = requests.post(f"{BE_BASE_URL}/api/NovaCartela", json={"numero_sorteio": numero})
+    else:
         resp = requests.post(f"{BE_BASE_URL}/api/NovaCartela")
     data = resp.json()
     session["numero_sorteio"] = data["numero_sorteio"]
@@ -42,11 +44,19 @@ def index():
 @app.post("/login")
 def login():
     email = request.form.get("email")
+    numero = request.form.get("numero_sorteio") or None
     if not email:
         return redirect(url_for("index"))
     session["email"] = email
     session["apelido"] = get_apelido(email)
-    session.pop("numero_sorteio", None)
+    if numero:
+        resp = requests.get(f"{BE_BASE_URL}/api/AtualizarCartela", params={"numero_sorteio": numero})
+        if resp.status_code != 200:
+            resp = requests.post(f"{BE_BASE_URL}/api/NovaCartela", json={"numero_sorteio": numero})
+    else:
+        resp = requests.post(f"{BE_BASE_URL}/api/NovaCartela")
+    data = resp.json()
+    session["numero_sorteio"] = data["numero_sorteio"]
     return redirect(url_for("index"))
 
 
@@ -91,17 +101,6 @@ def sortear():
     cartela = ensure_cartela()
     cartela["sorteado"] = data["time_sorteado"]
     return render_template("_result.html", cartela=cartela)
-
-
-@app.post("/nova")
-def nova():
-    if "email" not in session:
-        return "", 401
-    resp = requests.post(f"{BE_BASE_URL}/api/NovaCartela")
-    data = resp.json()
-    session["numero_sorteio"] = data["numero_sorteio"]
-    cartela = ensure_cartela()
-    return render_template("_grid.html", cartela=cartela, apelido=session["apelido"])
 
 
 if __name__ == "__main__":

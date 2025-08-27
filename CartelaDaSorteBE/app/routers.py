@@ -5,8 +5,9 @@ router = APIRouter()
 
 
 @router.post("/NovaCartela", response_model=schemas.Cartela)
-async def nova_cartela():
-    return await services.nova_cartela()
+async def nova_cartela(req: schemas.NovaCartelaReq | None = None):
+    numero = req.numero_sorteio if req else None
+    return await services.nova_cartela(numero)
 
 
 @router.post("/ApostarNaCartela", response_model=schemas.ApostaResp)

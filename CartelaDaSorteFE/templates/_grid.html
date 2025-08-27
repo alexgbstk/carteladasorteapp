@@ -22,7 +22,6 @@
     <div class="mt-4 flex space-x-2">
         <button hx-get="{{ url_for('atualizar') }}" hx-target="#cartela" hx-swap="outerHTML" class="bg-gray-300 px-4 py-2">Atualizar</button>
         <button hx-post="{{ url_for('sortear') }}" hx-target="#result" hx-swap="outerHTML" class="bg-red-500 text-white px-4 py-2" {% if not completa %}disabled{% endif %}>Sortear</button>
-        <button hx-post="{{ url_for('nova') }}" hx-target="#cartela" hx-swap="outerHTML" class="bg-blue-500 text-white px-4 py-2">Nova</button>
     </div>
     {% include '_result.html' %}
 </div>
