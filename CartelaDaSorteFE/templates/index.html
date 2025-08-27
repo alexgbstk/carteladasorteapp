@@ -8,9 +8,9 @@
 </form>
 {% else %}
 <div class="mb-4">Olá {{ apelido }}, clique em apenas um time abaixo:</div>
-{% include '_grid.html' %}
+<div id="cartela" hx-get="{{ url_for('atualizar') }}" hx-trigger="load" hx-target="#cartela" hx-swap="outerHTML"></div>
 <div class="mt-4">
     <a href="{{ url_for('logout') }}" class="text-sm text-blue-500">Sair</a>
-</div>
+    </div>
 {% endif %}
 {% endblock %}

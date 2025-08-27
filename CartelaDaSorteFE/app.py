@@ -15,13 +15,20 @@ def get_apelido(email: str) -> str:
 
 
 def ensure_cartela():
+    """Ensure there is an active cartela and return its state.
+
+    If a cartela number is stored in session, try to fetch that specific
+    cartela. Otherwise, attempt to retrieve whichever cartela is currently
+    active. Only when the fetch fails do we create a new one. This allows new
+    gamblers to join an existing draw without clicking "Atualizar" first.
+    """
+
     numero = session.get("numero_sorteio")
-    if numero:
-        resp = requests.get(f"{BE_BASE_URL}/api/AtualizarCartela", params={"numero_sorteio": numero})
-        if resp.status_code != 200:
-            resp = requests.post(f"{BE_BASE_URL}/api/NovaCartela", json={"numero_sorteio": numero})
-    else:
-        resp = requests.post(f"{BE_BASE_URL}/api/NovaCartela")
+    params = {"numero_sorteio": numero} if numero else {}
+    resp = requests.get(f"{BE_BASE_URL}/api/AtualizarCartela", params=params or None)
+    if resp.status_code != 200:
+        payload = {"numero_sorteio": numero} if numero else None
+        resp = requests.post(f"{BE_BASE_URL}/api/NovaCartela", json=payload)
     data = resp.json()
     session["numero_sorteio"] = data["numero_sorteio"]
     return data
@@ -32,13 +39,8 @@ def index():
     email = session.get("email")
     if not email:
         return render_template("index.html", logged=False)
-    cartela = ensure_cartela()
-    return render_template(
-        "index.html",
-        logged=True,
-        apelido=get_apelido(email),
-        cartela=cartela,
-    )
+    # cartela will be fetched asynchronously via HTMX on page load
+    return render_template("index.html", logged=True, apelido=get_apelido(email))
 
 
 @app.post("/login")
@@ -49,14 +51,10 @@ def login():
         return redirect(url_for("index"))
     session["email"] = email
     session["apelido"] = get_apelido(email)
+    # Store provided draw number; ensure_cartela will handle creating or
+    # fetching the proper cartela on the next request.
     if numero:
-        resp = requests.get(f"{BE_BASE_URL}/api/AtualizarCartela", params={"numero_sorteio": numero})
-        if resp.status_code != 200:
-            resp = requests.post(f"{BE_BASE_URL}/api/NovaCartela", json={"numero_sorteio": numero})
-    else:
-        resp = requests.post(f"{BE_BASE_URL}/api/NovaCartela")
-    data = resp.json()
-    session["numero_sorteio"] = data["numero_sorteio"]
+        session["numero_sorteio"] = numero
     return redirect(url_for("index"))
 
 
