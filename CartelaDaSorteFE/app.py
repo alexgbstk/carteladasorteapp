@@ -14,6 +14,14 @@ def get_apelido(email: str) -> str:
     return email.split("@")[0]
 
 
+def render_grid(cartela: dict) -> str:
+    """Render the grid template with completeness flag."""
+    completa = all(cartela["apostas"][club] for club in cartela["clubes"])
+    return render_template(
+        "_grid.html", cartela=cartela, apelido=session["apelido"], completa=completa
+    )
+
+
 def ensure_cartela():
     """Ensure there is an active cartela and return its state.
 
@@ -76,7 +84,7 @@ def aposta():
         json={"numero_sorteio": numero, "email": session["email"], "time": time},
     )
     cartela = ensure_cartela()
-    return render_template("_grid.html", cartela=cartela, apelido=session["apelido"])
+    return render_grid(cartela)
 
 
 @app.get("/atualizar")
@@ -84,7 +92,7 @@ def atualizar():
     if "email" not in session:
         return "", 401
     cartela = ensure_cartela()
-    return render_template("_grid.html", cartela=cartela, apelido=session["apelido"])
+    return render_grid(cartela)
 
 
 @app.post("/sortear")
